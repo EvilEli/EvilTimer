@@ -73,8 +73,9 @@ class CubeTimerState():
                 worstTime = time
         self.statMean = sum(self.timeList)/len(self.timeList)
         self.statMeanItem.setText(self.timeToStr(self.statMean))
-        self.statAverage = (sum(self.timeList) - bestTime - worstTime)/(len(self.timeList)-2)
-        self.statAverageItem.setText(self.timeToStr(self.statAverage))
+        if (len(self.timeList) > 2):
+            self.statAverage = (sum(self.timeList) - bestTime - worstTime)/(len(self.timeList)-2)
+            self.statAverageItem.setText(self.timeToStr(self.statAverage))
         self.statBest = bestTime
         self.statBestItem.setText(self.timeToStr(self.statBest))
         self.statWorst = worstTime
