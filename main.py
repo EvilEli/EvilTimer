@@ -13,6 +13,7 @@ class CubeTimer(QtGui.QTabWidget):
         self.ui_timer = QtCore.QTimer()
 
         self.connectSlots()
+        self.connectModels()
 
         self.ui_timer.start(51)
         self.chronoBlocked = False
@@ -30,12 +31,17 @@ class CubeTimer(QtGui.QTabWidget):
         self.ui_timer.timeout.connect(self.updateUI)
         self.cuTi_ui.pB_timeDelete.clicked.connect(self.slot_timeDeleteClick)
 
+    def connectModels(self):
+        self.cuTi_ui.lV_times.setModel(self.state.timeListModel)
+        self.cuTi_ui.tW_stats1.setItem(0,0, self.state.statMeanItem)
+        self.cuTi_ui.tW_stats1.setItem(1,0, self.state.statAverageItem)
+        self.cuTi_ui.tW_stats1.setItem(2,0, self.state.statBestItem)
+        self.cuTi_ui.tW_stats1.setItem(4,0, self.state.statWorstItem)
+
     def keyPressEvent(self, e):
         if e.key() == QtCore.Qt.Key_Space:
             if self.state.chronoIsRunning:
                 self.state.stopChrono()
-                self.cuTi_ui.lV_times.setModel(self.state.timeListModel)
-                self.updateStats()
             else:
                 self.cuTi_ui.l_chronoTime.setStyleSheet('color:#00CF36')
 
@@ -60,12 +66,6 @@ class CubeTimer(QtGui.QTabWidget):
         #for i in range(len(self.state.timeList)):
         #     print("item-" + str(i) + " " + str(self.state.timeList[i]))
         #print("\n")
-
-    def updateStats(self):
-        self.cuTi_ui.tW_stats1.setItem(0,0, self.state.statMeanItem)
-        self.cuTi_ui.tW_stats1.setItem(1,0, self.state.statAverageItem)
-        self.cuTi_ui.tW_stats1.setItem(2,0, self.state.statBestItem)
-        self.cuTi_ui.tW_stats1.setItem(3,0, self.state.statWorstItem)
 
 
 
