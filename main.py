@@ -33,10 +33,20 @@ class CubeTimer(QtGui.QTabWidget):
 
     def connectModels(self):
         self.cuTi_ui.lV_times.setModel(self.state.timeListModel)
+
         self.cuTi_ui.tW_stats1.setItem(0,0, self.state.statMeanItem)
         self.cuTi_ui.tW_stats1.setItem(1,0, self.state.statAverageItem)
         self.cuTi_ui.tW_stats1.setItem(2,0, self.state.statBestItem)
+        self.cuTi_ui.tW_stats1.setItem(3,0, self.state.statMedianItem)
         self.cuTi_ui.tW_stats1.setItem(4,0, self.state.statWorstItem)
+        self.cuTi_ui.tW_stats1.setItem(5,0, self.state.statStdDevItem)
+
+        self.cuTi_ui.tW_stats2.setItem(0,0, self.state.statMo3Item)
+        self.cuTi_ui.tW_stats2.setItem(1,0, self.state.statBestMo3Item)
+        self.cuTi_ui.tW_stats2.setItem(2,0, self.state.statAo5Item)
+        self.cuTi_ui.tW_stats2.setItem(3,0, self.state.statBestAo5Item)
+        self.cuTi_ui.tW_stats2.setItem(4,0, self.state.statAo12Item)
+        self.cuTi_ui.tW_stats2.setItem(5,0, self.state.statBestAo12Item)
 
     def keyPressEvent(self, e):
         if e.key() == QtCore.Qt.Key_Space:
