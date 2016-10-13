@@ -2,6 +2,7 @@ from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
 from history import CubeTimerHistory
+from scramble import CubeTimerScramble
 
 import math
 import sys
@@ -10,9 +11,12 @@ import datetime
 class CubeTimerState():
     def __init__(self):
         self.initHist()
+        self.initScramble()
+
         self.puzzleType = "3x3x3"
         self.chronoTimer = QTime()
         self.chronoIsRunning = False
+        self.chonoTime = 0
         self.chronoStr = QString('00 : 00 . 000')
         self.timeList = [];
         self.timeListModel = QtGui.QStandardItemModel();
@@ -47,11 +51,16 @@ class CubeTimerState():
         self.history = CubeTimerHistory()
         self.history.initHistory()
 
+    def initScramble(self):
+        self.scramble = CubeTimerScramble()
+        self.scramble.getNewScramble()
+
     def chronoToStr(self, live):
         if live:
-            chronoTime = self.chronoTimer.elapsed()
+            self.chronoTime = self.chronoTimer.elapsed()
         else:
-            chronoTime = self.timeList[-1]
+            self.chronoTime = self.timeList[-1]
+        chronoTime = self.chronoTime
         ms = chronoTime % 1000
         chronoTime /= 1000
         s = chronoTime % 60

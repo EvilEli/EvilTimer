@@ -24,6 +24,7 @@ class CubeTimer(QtGui.QTabWidget):
     def initUI(self):
         self.cuTi_ui = Ui_TabWidget()
         self.cuTi_ui.setupUi(self)
+        self.cuTi_ui.l_scramble.setText(self.state.scramble.scramble)
         self.setWindowTitle('CubeTimer v0.00')
         self.show()
 
@@ -50,14 +51,20 @@ class CubeTimer(QtGui.QTabWidget):
         self.cuTi_ui.tW_stats2.setItem(5,0, self.state.statBestAo12Item)
 
     def keyPressEvent(self, e):
-        if e.key() == QtCore.Qt.Key_Space:
+        if e.isAutoRepeat():
+            e.ignore()
+        elif e.key() == QtCore.Qt.Key_Space:
             if self.state.chronoIsRunning:
                 self.state.stopChrono()
+                self.updateTime(live=False)
+                self.cuTi_ui.l_scramble.setText(self.state.scramble.getNewScramble())
             else:
                 self.cuTi_ui.l_chronoTime.setStyleSheet('color:#00CF36')
 
     def keyReleaseEvent(self, e):
-        if e.key() == QtCore.Qt.Key_Space:
+        if e.isAutoRepeat():
+            e.ignore()
+        elif e.key() == QtCore.Qt.Key_Space:
             if not (self.chronoBlocked):
                 self.state.startChrono()
                 self.cuTi_ui.l_chronoTime.setStyleSheet('color:#FFFFFF')
@@ -67,7 +74,21 @@ class CubeTimer(QtGui.QTabWidget):
 
     def updateUI(self):
         if (self.state.chronoIsRunning):
-            self.cuTi_ui.l_chronoTime.setText(self.state.chronoToStr(True))
+            self.updateTime(live=True)
+
+    def updateTime(self, live=False):
+        self.cuTi_ui.l_chronoTime.setText(self.state.chronoToStr(live))
+        if (self.state.statMean != 0):
+            cur_perc = 100*float(self.state.chronoTime)/float(self.state.statMean)
+            if (cur_perc > 200):
+                self.cuTi_ui.pBar_mean.setValue(100)
+                self.cuTi_ui.pBar_overtime.setValue(100)
+            elif (cur_perc > 100):
+                self.cuTi_ui.pBar_mean.setValue(100)
+                self.cuTi_ui.pBar_overtime.setValue(cur_perc-100)
+            else:
+                self.cuTi_ui.pBar_mean.setValue(cur_perc)
+                self.cuTi_ui.pBar_overtime.setValue(0)
 
     def slot_timeDeleteClick(self):
         sel_idx = self.cuTi_ui.lV_times.selectedIndexes()[0].row()
