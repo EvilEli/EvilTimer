@@ -32,6 +32,7 @@ class CubeTimer(QtGui.QTabWidget):
         self.cuTi_ui.pB_timeDelete.clicked.connect(self.slot_timeDeleteClick)
 
     def connectModels(self):
+        self.cuTi_ui.lV_history.setModel(self.state.history.timeListModel)
         self.cuTi_ui.lV_times.setModel(self.state.timeListModel)
 
         self.cuTi_ui.tW_stats1.setItem(0,0, self.state.statMeanItem)

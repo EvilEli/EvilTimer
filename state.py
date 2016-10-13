@@ -1,12 +1,15 @@
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
-import math
+from history import CubeTimerHistory
 
+import math
 import sys
+import datetime
 
 class CubeTimerState():
     def __init__(self):
+        self.initHist()
         self.puzzleType = "3x3x3"
         self.chronoTimer = QTime()
         self.chronoIsRunning = False
@@ -39,6 +42,11 @@ class CubeTimerState():
         self.statBestAo5Item = QtGui.QTableWidgetItem()
         self.statAo12Item = QtGui.QTableWidgetItem()
         self.statBestAo12Item = QtGui.QTableWidgetItem()
+
+    def initHist(self):
+        self.history = CubeTimerHistory()
+        self.history.initHistory()
+
     def chronoToStr(self, live):
         if live:
             chronoTime = self.chronoTimer.elapsed()
@@ -78,6 +86,7 @@ class CubeTimerState():
         item = QtGui.QStandardItem(str(len(self.timeList)) + ".\t" +self.chronoToStr(False))
         self.timeListModel.insertRow(0, item)
         self.calcStats()
+        self.updateHistory()
 
     def calcStats(self):
         bestTime = self.timeList[0]
@@ -168,3 +177,11 @@ class CubeTimerState():
                 if (cur_Ao12 < self.statBestAo12):
                     self.statBestAo12 = cur_Ao12
             self.statBestAo12Item.setText(self.timeToStr(self.statBestAo12))
+
+    def updateHistory(self):
+        self.history.timeList.append([len(self.history.timeList), str(datetime.datetime.utcnow())[:-7], self.chronoToStr(False), 0, "scramble"])
+        item = QtGui.QStandardItem(str(self.history.timeList[-1][0]) + "\t" + self.history.timeList[-1][1] + "\t\t" + \
+                                   self.history.timeList[-1][2] + "\t" + str(self.history.timeList[-1][3]) + "\t" + \
+                                   self.history.timeList[-1][4])
+        #item = QtGui.QStandardItem("test")
+        self.history.timeListModel.insertRow(1, item)
