@@ -55,6 +55,7 @@ class CubeTimerState():
         self.scramble = CubeTimerScramble()
         self.scramble.getNewScramble()
 
+    # returns the current time of chronometer as string (live: elapsed_time, non-live: last_time)
     def chronoToStr(self, live):
         if live:
             self.chronoTime = self.chronoTimer.elapsed()
@@ -72,6 +73,7 @@ class CubeTimerState():
         self.chronoStr += QString("%1").arg(ms, 3, 10, QChar('0'))
         return self.chronoStr
 
+    # returns the string form of a provided ms-integer
     def timeToStr(self, time):
         chronoTime = time
         ms = chronoTime % 1000
@@ -95,9 +97,20 @@ class CubeTimerState():
         item = QtGui.QStandardItem(str(len(self.timeList)) + ".\t" +self.chronoToStr(False))
         self.timeListModel.insertRow(0, item)
         self.calcStats()
-        self.updateHistory()
+        self.history.addTime([self.history.strToTime(self.chronoToStr(False)), str(datetime.datetime.utcnow())[:-7], self.chronoToStr(False), 0, "scramble"])
+
+    def deleteTime(self, sel_idx):
+        self.timeListModel.clear()
+        self.timeList.pop((len(self.timeList)-1) - sel_idx)
+        for i,time in enumerate(self.timeList):
+            item = QtGui.QStandardItem(str(i+1) + ".\t" +self.timeToStr(time))
+            self.timeListModel.insertRow(0, item)
+        self.history.deleteTime(sel_idx)
+        self.calcStats()
 
     def calcStats(self):
+        if (len(self.timeList) == 0):
+            return
         bestTime = self.timeList[0]
         worstTime = self.timeList[0]
         for i, time in enumerate(self.timeList):
@@ -186,11 +199,3 @@ class CubeTimerState():
                 if (cur_Ao12 < self.statBestAo12):
                     self.statBestAo12 = cur_Ao12
             self.statBestAo12Item.setText(self.timeToStr(self.statBestAo12))
-
-    def updateHistory(self):
-        self.history.timeList.append([len(self.history.timeList), str(datetime.datetime.utcnow())[:-7], self.chronoToStr(False), 0, "scramble"])
-        item = QtGui.QStandardItem(str(self.history.timeList[-1][0]) + "\t" + self.history.timeList[-1][1] + "\t\t" + \
-                                   self.history.timeList[-1][2] + "\t" + str(self.history.timeList[-1][3]) + "\t" + \
-                                   self.history.timeList[-1][4])
-        #item = QtGui.QStandardItem("test")
-        self.history.timeListModel.insertRow(1, item)
